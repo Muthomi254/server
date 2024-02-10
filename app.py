@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, jsonify
+from flask_cors import CORS  # Import CORS
 from models import db, User
 from flask_migrate import Migrate
 import os
@@ -6,6 +7,10 @@ from flask_jwt_extended import JWTManager
 from blueprints.auth import auth_bp
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
+
 # Use a relative path for SQLite database
 db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
@@ -26,7 +31,6 @@ app.register_blueprint(auth_bp)
 @jwt.unauthorized_loader
 def unauthorized_response(callback):
     return jsonify({'message': 'Unauthorized access'}), 401
-
 
 if __name__ == '__main__':
     # Create the database tables before running the app
